@@ -1,6 +1,4 @@
-Yes — the README needs a full update. Here's the corrected version:
 
-```markdown
 # 🕌 KHALEEJI-MIND
 
 **A Gulf Arabic Social Cognition Benchmark for Theory of Mind Evaluation**
@@ -180,4 +178,4 @@ for Theory of Mind Evaluation. NYU Abu Dhabi, CS-UH 3260.
 ## License
 
 Dataset and code released for academic use only. Do not redistribute without permission.
-```
+
