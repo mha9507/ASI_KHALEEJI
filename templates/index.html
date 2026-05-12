@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>KHALEEJI-MIND Prototype</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f5f0;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 40px auto;
+      background: white;
+      padding: 35px;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #4b2e1e;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 20px;
+    }
+
+    .scenario {
+      background: #faf7f1;
+      padding: 20px;
+      border-radius: 12px;
+      line-height: 1.6;
+      margin-bottom: 25px;
+      border-left: 5px solid #8b5e3c;
+    }
+
+    .question {
+      font-weight: bold;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 14px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.2s;
+    }
+
+    .option:hover {
+      background: #f0e6dc;
+    }
+
+    .option.selected {
+      background: #d8c3ad;
+      border-color: #8b5e3c;
+    }
+
+    button {
+      padding: 12px 22px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      margin-top: 15px;
+      margin-right: 10px;
+    }
+
+    #submitBtn {
+      background: #4b2e1e;
+      color: white;
+    }
+
+    #nextBtn {
+      background: #ddd;
+      color: #222;
+    }
+
+    .feedback {
+      display: none;
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 12px;
+      line-height: 1.6;
+    }
+
+    .correct {
+      background: #e8f5e9;
+      border-left: 5px solid #2e7d32;
+    }
+
+    .incorrect {
+      background: #fff3e0;
+      border-left: 5px solid #ef6c00;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+
+    .small {
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>KHALEEJI-MIND</h1>
+    <p class="subtitle">
+      Gulf Arabic Social Cognition and Theory of Mind Training Prototype
+    </p>
+
+    <div class="meta" id="meta"></div>
+
+    <div class="scenario" id="scenarioText">
+      Loading scenario...
+    </div>
+
+    <div class="question" id="questionText"></div>
+
+    <button class="option" onclick="selectAnswer('A')" id="optionA"></button>
+    <button class="option" onclick="selectAnswer('B')" id="optionB"></button>
+    <button class="option" onclick="selectAnswer('C')" id="optionC"></button>
+    <button class="option" onclick="selectAnswer('D')" id="optionD"></button>
+
+    <button id="submitBtn" onclick="submitAnswer()">Submit Answer</button>
+    <button id="nextBtn" onclick="loadScenario()">Next Scenario</button>
+
+    <div class="feedback" id="feedbackBox">
+      <h3 id="feedbackTitle"></h3>
+      <p><span class="label">Correct answer:</span> <span id="correctAnswer"></span></p>
+      <p><span class="label">Cultural explanation:</span></p>
+      <p id="explanation"></p>
+      <p><span class="label">Common misreading:</span></p>
+      <p id="misreading"></p>
+    </div>
+  </div>
+
+  <script>
+    let currentScenario = null;
+    let selectedAnswer = null;
+
+    async function loadScenario() {
+      selectedAnswer = null;
+
+      document.getElementById("feedbackBox").style.display = "none";
+
+      const buttons = document.querySelectorAll(".option");
+      buttons.forEach(button => {
+        button.classList.remove("selected");
+        button.disabled = false;
+      });
+
+      const response = await fetch("/scenario");
+      currentScenario = await response.json();
+
+      document.getElementById("meta").innerText =
+        `Category: ${currentScenario.norm_category} | Language: ${currentScenario.language} | ToM Order: ${currentScenario.tom_order}`;
+
+      document.getElementById("scenarioText").innerText = currentScenario.scenario_text;
+      document.getElementById("questionText").innerText = currentScenario.question_text;
+
+      document.getElementById("optionA").innerText = "A. " + currentScenario.option_A;
+      document.getElementById("optionB").innerText = "B. " + currentScenario.option_B;
+      document.getElementById("optionC").innerText = "C. " + currentScenario.option_C;
+      document.getElementById("optionD").innerText = "D. " + currentScenario.option_D;
+    }
+
+    function selectAnswer(answer) {
+      selectedAnswer = answer;
+
+      const buttons = document.querySelectorAll(".option");
+      buttons.forEach(button => button.classList.remove("selected"));
+
+      document.getElementById("option" + answer).classList.add("selected");
+    }
+
+    async function submitAnswer() {
+      if (!selectedAnswer) {
+        alert("Please select an answer first.");
+        return;
+      }
+
+      const response = await fetch("/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          id: currentScenario.id,
+          answer: selectedAnswer
+        })
+      });
+
+      const result = await response.json();
+
+      const feedbackBox = document.getElementById("feedbackBox");
+      const feedbackTitle = document.getElementById("feedbackTitle");
+
+      feedbackBox.style.display = "block";
+
+      if (result.is_correct) {
+        feedbackBox.className = "feedback correct";
+        feedbackTitle.innerText = "Correct!";
+      } else {
+        feedbackBox.className = "feedback incorrect";
+        feedbackTitle.innerText = "Not quite.";
+      }
+
+      document.getElementById("correctAnswer").innerText = result.correct_answer;
+      document.getElementById("explanation").innerText = result.explanation;
+      document.getElementById("misreading").innerText = result.common_western_misreading || "No misreading provided.";
+
+      const buttons = document.querySelectorAll(".option");
+      buttons.forEach(button => button.disabled = true);
+    }
+
+    loadScenario();
+  </script>
+
+</body>
+</html>
