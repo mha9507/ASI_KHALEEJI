@@ -1,3 +1,6 @@
+Yes — the README needs a full update. Here's the corrected version:
+
+```markdown
 # 🕌 KHALEEJI-MIND
 
 **A Gulf Arabic Social Cognition Benchmark for Theory of Mind Evaluation**
@@ -9,16 +12,17 @@
 
 ## Overview
 
-Theory of Mind (ToM) benchmarks have been developed almost exclusively in English-language, WEIRD (Western, Educated, Industrialized, Rich, Democratic) contexts. **KHALEEJI-MIND** is the first Gulf Arabic social cognition benchmark, consisting of 100 scenarios grounded in four core Emirati cultural norm categories:
+Theory of Mind (ToM) benchmarks have been developed almost exclusively in English-language, WEIRD (Western, Educated, Industrialized, Rich, Democratic) contexts. **KHALEEJI-MIND** is the first Gulf Arabic social cognition benchmark, consisting of 80 scenarios grounded in five core Emirati cultural norm categories:
 
 | Category | Description |
 |---|---|
 | `diyafa` | Hospitality norms and hosting obligations |
-| `hierarchy_wasta` | Authority, social hierarchy, and wasta dynamics |
-| `gender_interaction` | Cross-gender interaction norms |
-| `religious_observance` | Islamic practice and daily religious life |
+| `hierarchy` | Age, rank, and status-based interaction rules |
+| `gender_interaction` | Cross-gender interaction and modesty norms |
+| `religious_observance` | Islamic practice and observance etiquette |
+| `community_obligation` | Collective duty, neighbourhood, and سنع etiquette |
 
-The benchmark evaluates GPT-4, Gemini, and a random baseline using zero-shot prompting, exposing systematic failures in Gulf-specific social ToM. A norm-in-context condition further diagnoses whether failures are knowledge gaps or embedded reasoning conflicts.
+The benchmark evaluates GPT-4, Gemini 2.5 Flash, Mistral-7B, and a random baseline across three prompting conditions: zero-shot, chain-of-thought, and norm-in-context.
 
 ---
 
@@ -26,45 +30,43 @@ The benchmark evaluates GPT-4, Gemini, and a random baseline using zero-shot pro
 
 | Property | Value |
 |---|---|
-| Total scenarios | 100 |
-| Norm categories | 4 (25 each — perfectly balanced) |
-| Language: English | 36 |
-| Language: Bilingual EN/AR | 35 |
-| Language: Arabic only | 29 |
-| ToM Order 1 | 92 |
-| ToM Order 2 | 8 |
+| Total scenarios | 80 |
+| Norm categories | 5 |
+| Language: English | 31 |
+| Language: Bilingual EN/AR | 25 |
+| Language: Arabic only | 24 |
+| ToM Order 1 | 41 |
+| ToM Order 2 | 39 |
 
 Each scenario includes:
 - A social situation in natural language (English, Arabic, or bilingual)
 - A Theory of Mind question about a named character
 - Four answer options: one culturally-correct answer, two plausible distractors, and one Western-centric misreading
 - A `cultural_explanation` field used in the norm-in-context condition
+- A `severity` rating (0–5) indicating the seriousness of the norm violation depicted
 
 ---
 
-## Key Results (Preliminary)
+## Key Results
 
 ### Zero-Shot Accuracy
 
-| Model | Overall | Diyafa | Hier/Wasta | Gender | Religious | EN | AR |
-|---|---|---|---|---|---|---|---|
-| GPT-4 | ~50% | ~44% | ~58% | ~44% | ~64% | ~52% | ~45% |
-| Gemini | ~49% | ~44% | ~52% | ~55% | ~60% | ~51% | ~45% |
-| Random | ~29% | — | — | — | — | — | — |
+| Model | Overall | Diyafa | Hierarchy | Gender | Religious | Comm. Obl. | EN | Bilingual | AR |
+|---|---|---|---|---|---|---|---|---|---|
+| GPT-4 | 95.0% | 91.3% | 93.3% | 100.0% | 100.0% | 90.9% | 96.8% | 92.0% | 95.8% |
+| Gemini | 95.0% | 91.3% | 86.7% | 100.0% | 100.0% | 100.0% | 96.8% | 96.0% | 91.7% |
+| Mistral-7B | 61.3% | 65.2% | 60.0% | 60.0% | 56.2% | 63.6% | 54.8% | 76.0% | 54.2% |
+| Random | 27.5% | — | — | — | — | — | — | — | — |
 
-### Western-Centric Error Rate
+### Three-Condition Comparison
 
-When models answer incorrectly, they choose the Western distractor at 2× the rate expected by chance:
+| Model | Zero-Shot | CoT | Norm-in-Context | NIC Δ |
+|---|---|---|---|---|
+| GPT-4 | 95.0% | 97.5% | 98.8% | +3.8pp |
+| Gemini | 95.0% | 96.2% | 96.2% | +1.2pp |
+| Mistral-7B | 61.3% | 66.2% | 75.0% | **+13.7pp** |
 
-| Model | Wrong Answers | Western-Centric | Rate |
-|---|---|---|---|
-| GPT-4 | 50 | 30 | 60.0% |
-| Gemini | 51 | 31 | 60.8% |
-| Random | 71 | 20 | 28.2% |
-
-### Norm-in-Context Diagnostic
-
-Providing explicit cultural context before each question produces no meaningful improvement (GPT-4: +0%, Gemini: +1%), indicating the failure mode is an embedded reasoning conflict, not a knowledge gap.
+The norm-in-context gain for Mistral-7B (+13.7pp) vs negligible gains for frontier models indicates that Mistral's failures are knowledge-driven, while frontier model errors reflect persistent reasoning biases.
 
 ---
 
@@ -74,69 +76,48 @@ Providing explicit cultural context before each question produces no meaningful 
 khaleeji-mind/
 │
 ├── README.md
-├── KHALEEJI_MIND_Pipeline.ipynb       # Main notebook — all steps end-to-end
-├── KHALEEJI_MIND_balanced_100.csv     # Dataset (100 scenarios)
-├── khaleeji_mind_results.csv          # Output results table (generated by Step 8)
-└── requirements.txt                   # Python dependencies
+├── KHALEEJI_MIND_Pipeline_cleaned.ipynb   # Main notebook — all steps end-to-end
+├── KHALEEJI_MIND_balanced_100_cleaned.csv # Dataset (80 scenarios, cleaned)
+├── khaleeji_mind_full_results.csv         # Full results (800 rows, all models × conditions)
+├── khaleeji_mind_results.png              # Accuracy chart
+└── requirements.txt                       # Python dependencies
 ```
 
 ---
 
 ## How to Reproduce
 
-### Option A — No API Keys (Mock Simulation)
-
-The notebook includes a full mock simulation that runs automatically when no API keys are provided. This produces a complete results table, figures, and error analysis without any API access.
-
-**Step 1.** Open `KHALEEJI_MIND_Pipeline.ipynb` in Google Colab:
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YOUR_USERNAME/khaleeji-mind/blob/main/KHALEEJI_MIND_Pipeline.ipynb)
+**Step 1.** Open `KHALEEJI_MIND_Pipeline_cleaned.ipynb` in Google Colab.
 
 **Step 2.** Run the install cell (Step 0), then do **Runtime → Restart session**.
 
-**Step 3.** In Step 1 (Configuration), leave the API key fields at their placeholder defaults:
+**Step 3.** In Step 1 (Configuration), paste your OpenRouter API key:
 ```python
-OPENROUTER_API_KEY = "sk-or-..."
-GEMINI_API_KEY     = "YOUR_GEMINI_KEY"
+OPENROUTER_API_KEY = "your-key-here"
+GEMINI_MODEL  = "google/gemini-2.5-flash"
+GPT4_MODEL    = "openai/gpt-4"
+LLAMA_MODEL   = "mistralai/mistral-7b-instruct-v0.1"
 ```
 
-**Step 4.** Upload `KHALEEJI_MIND_balanced_100.csv` to your Google Drive and update the path in Step 2:
+**Step 4.** Upload `KHALEEJI_MIND_balanced_100_cleaned.csv` to your Google Drive and update the path in Step 2:
 ```python
-CSV_PATH = "/content/drive/MyDrive/ASI_FINAL_PROJECT/KHALEEJI_MIND_balanced_100.csv"
+CSV_PATH = "/content/drive/MyDrive/ASI_FINAL_PROJECT/KHALEEJI_MIND_balanced_100_cleaned.csv"
 ```
 
-**Step 5.** Run all remaining cells top to bottom (Steps 2–9). The notebook will automatically detect missing keys and run mock simulation.
-
----
-
-### Option B — Live API Evaluation (Real Results)
-
-**Step 1.** Obtain API keys:
-- **GPT-4 / Gemini via OpenRouter:** [openrouter.ai](https://openrouter.ai) — free tier available
-- **Gemini direct:** [Google AI Studio](https://aistudio.google.com) — free tier available
-
-**Step 2.** In Step 1 (Configuration), paste your keys:
-```python
-OPENROUTER_API_KEY = "sk-or-YOUR_REAL_KEY"
-GEMINI_API_KEY     = "YOUR_REAL_GEMINI_KEY"
-```
-
-**Step 3.** Run all cells top to bottom. Live API calls will run for GPT-4 and Gemini (100 scenarios each, ~5–10 minutes total).
+**Step 5.** Run all cells top to bottom. All three models will run live — no mock fallback.
 
 ---
 
 ### Local Setup (Optional)
 
-To run outside of Google Colab:
-
 ```bash
-git clone https://github.com/YOUR_USERNAME/khaleeji-mind.git
-cd khaleeji-mind
+git clone https://github.com/mha9507/ASI_KHALEEJI.git
+cd ASI_KHALEEJI
 pip install -r requirements.txt
-jupyter notebook KHALEEJI_MIND_Pipeline.ipynb
+jupyter notebook KHALEEJI_MIND_Pipeline_cleaned.ipynb
 ```
 
-Remove the `drive.mount(...)` call in Step 2 and set `CSV_PATH` to a local path instead.
+Set `CSV_PATH` to a local path and remove the `drive.mount(...)` call in Step 2.
 
 ---
 
@@ -144,7 +125,6 @@ Remove the `drive.mount(...)` call in Step 2 and set `CSV_PATH` to a local path 
 
 ```
 openai
-google-generativeai
 pandas
 matplotlib
 seaborn
@@ -152,11 +132,7 @@ scipy
 scikit-learn
 statsmodels
 numpy>=2.0
-```
-
-Install with:
-```bash
-pip install openai google-generativeai pandas matplotlib seaborn scipy scikit-learn statsmodels "numpy>=2.0"
+requests
 ```
 
 ---
@@ -165,48 +141,37 @@ pip install openai google-generativeai pandas matplotlib seaborn scipy scikit-le
 
 | Step | Description |
 |---|---|
-| Step 0 | Install packages + numpy upgrade |
+| Step 0 | Install packages |
 | Step 1 | Configuration (API keys, model IDs) |
-| Step 2 | Load dataset from CSV, normalize columns, build options dict |
-| Step 2b | Map western distractor sentences to answer letters |
-| Step 3 | Text preprocessing — Arabic diacritic removal, whitespace normalization, prompt construction |
-| Step 4 | Model evaluation — random baseline, GPT-4 via OpenRouter, Gemini; mock fallback if no keys |
-| Step 5 | Main results table — overall and per-category accuracy, language breakdown, ToM order breakdown |
-| Step 5b | Chain-of-Thought prompting condition |
-| Step 6 | Visualizations — accuracy bar charts, heatmaps, error distribution |
-| Step 7 | Error analysis — western-centric error rate, ToM order breakdown |
-| Step 8 | Save results to `khaleeji_mind_results.csv` |
-| Step 9 | Cultural bias analysis — norm-in-context and western-framing probe conditions |
-| Step 9b | Zero-shot vs norm-in-context comparison table and per-category boost analysis |
+| Step 2 | Load dataset, normalize columns, build options dict |
+| Step 2b | Dataset overview and statistics |
+| Step 2c | Map western distractor text to answer letter |
+| Step 3 | Text preprocessing and prompt construction |
+| Step 4 | Model evaluation functions (random baseline + OpenRouter with retry logic) |
+| Step 4b | Run zero-shot evaluation (Mistral-7B, Gemini, GPT-4, Random) |
+| Step 5 | Main results table |
+| Step 6 | Chain-of-thought evaluation |
+| Step 7 | Norm-in-context prompts and evaluation |
+| Step 8 | Visualisations |
+| Step 9 | Error analysis (western-centric error rate, ToM order, severity) |
+| Step 10 | Norm-in-context diagnostic and spot-check |
+| Step 11 | Save full results to CSV |
 
 ---
 
 ## Known Issues
 
-- **Single annotator:** Inter-annotator agreement cannot be computed yet; annotation reliability is a limitation of the current version.
-- **Mock results:** When API keys are absent, the notebook runs mock simulation with calibrated random accuracy. These results are illustrative only.
-- **Jais not yet integrated:** Jais evaluation requires a GPU runtime and HuggingFace access; it is deferred to final submission.
-- **Western distractor mapping:** The word-overlap matching heuristic in Step 2b is approximate. 66% of western distractors map to option A by design, which is correct; the mapping logic may misassign edge cases.
-- **Second-order ToM (n=8):** Results for order-2 scenarios are exploratory and not statistically reliable at this sample size.
-
----
-
-## Planned Next Steps
-
-1. Run live GPT-4 and Gemini evaluations with real API keys and report verified numbers
-2. Integrate Jais via HuggingFace on GPU Colab runtime
-3. Collect human baseline responses via the interactive web prototype
-4. Conduct inter-annotator agreement study (target: second annotator for 20% of scenarios)
-5. Write full results and norm-in-context analysis into the final paper
+- **Single annotator:** Inter-annotator agreement cannot be computed yet; all scenarios were authored and validated by one native Emirati speaker.
+- **Jais not integrated:** HuggingFace Inference API access was unavailable at submission. Replaced with Mistral-7B. Jais evaluation via T4 GPU is the first Phase 2 priority.
+- **Construct validity:** Many scenarios may be solvable through general social reasoning rather than Gulf-specific cultural knowledge, limiting diagnostic power for frontier models.
+- **Western distractor mapping:** Word-overlap heuristic may misassign edge cases with very short option texts.
 
 ---
 
 ## Citation
 
-If you use this benchmark, please cite:
-
 ```
-Alzaabi, M. (2025). KHALEEJI-MIND: A Gulf Arabic Social Cognition Benchmark
+Alzaabi, M. (2026). KHALEEJI-MIND: A Gulf Arabic Social Cognition Benchmark
 for Theory of Mind Evaluation. NYU Abu Dhabi, CS-UH 3260.
 ```
 
@@ -215,3 +180,4 @@ for Theory of Mind Evaluation. NYU Abu Dhabi, CS-UH 3260.
 ## License
 
 Dataset and code released for academic use only. Do not redistribute without permission.
+```
