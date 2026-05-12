@@ -1,0 +1,8 @@
+timestamp,scenario_id,norm_category,language,tom_order,user_answer,correct_answer,is_correct
+2026-05-13T00:38:26,KM_R19,religious_observance,AR,second,A,C,False
+2026-05-13T00:38:32,KM_H02,hierarchy,EN,first,A,D,False
+2026-05-13T00:38:40,KM_R03,religious_observance,EN,second,A,D,False
+2026-05-13T00:38:43,KM_C4,community_obligation,ENG/AR,second,C,B,False
+2026-05-13T00:38:46,KM_D03,diyafa,EN,first,C,B,False
+2026-05-13T00:38:49,KM_C7,community_obligation,ENG/AR,first,D,D,True
+2026-05-13T00:38:53,KM_D06,diyafa,EN,second,D,C,False
