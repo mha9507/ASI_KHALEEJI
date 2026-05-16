@@ -81,6 +81,7 @@ Norm-in-context prompting produced the strongest gain for **Mistral-7B**, which 
 
 ---
 
+
 ## Repository Structure
 
 ```text
@@ -89,8 +90,8 @@ khaleeji-mind/
 ├── README.md
 ├── app.py                                  # Flask demo backend
 ├── dataset.csv                             # Dataset used by the Flask app
-├── KHALEEJI_MIND_Pipeline_cleaned.ipynb    # Main notebook: full evaluation pipeline
-├── KHALEEJI_MIND_final_80.csv              # Final benchmark dataset: 80 scenarios
+├── KHALEEJI_MIND_mha9507.ipynb    # Main notebook: full evaluation pipeline
+├── KHALEEJI_MIND_balanced_80_cleaned.csv              # Final benchmark dataset: 80 scenarios
 ├── khaleeji_mind_full_results.csv          # Full results: 800 rows
 ├── khaleeji_mind_results.png               # Zero-shot/category results visualization
 ├── khaleeji_mind_prompting_conditions.png  # Prompting-condition comparison figure
@@ -110,7 +111,7 @@ khaleeji-mind/
 Open the notebook in Google Colab:
 
 ```text
-KHALEEJI_MIND_Pipeline_cleaned.ipynb
+KHALEEJI_MIND_mha9507.ipynb
 ```
 
 ### Step 2: Install dependencies
@@ -136,7 +137,7 @@ Do **not** commit real API keys to GitHub.
 Upload the dataset to Google Drive and update the path:
 
 ```python
-CSV_PATH = "/content/drive/MyDrive/ASI_FINAL_PROJECT/KHALEEJI_MIND_final_80.csv"
+CSV_PATH = "/content/drive/MyDrive/ASI_FINAL_PROJECT/KHALEEJI_MIND_balanced_80_cleaned.csv "
 ```
 
 ### Step 5: Run the notebook
@@ -223,7 +224,7 @@ To run the notebook locally:
 git clone https://github.com/mha9507/ASI_KHALEEJI.git
 cd ASI_KHALEEJI
 pip install -r requirements.txt
-jupyter notebook KHALEEJI_MIND_Pipeline_cleaned.ipynb
+jupyter notebook KHALEEJI_MIND_mha9507.ipynb
 ```
 
 If running locally, set `CSV_PATH` to the local dataset path and remove or comment out the Google Drive mounting cell.
@@ -309,22 +310,7 @@ Bearer
 sk-
 ```
 
-Do not commit `.env` files or notebook outputs containing private keys.
 
----
-
-## Submission Checklist
-
-- [x] Final dataset contains 80 scenarios
-- [x] Correct answers are balanced across A, B, C, and D
-- [x] Full results file contains 800 rows
-- [x] Notebook runs end-to-end
-- [x] Flask demo app runs locally
-- [x] `requirements.txt` included
-- [x] `.gitignore` included
-- [x] API keys removed before upload
-
----
 
 ## Citation
 
